@@ -1,0 +1,20 @@
+Part 1
+GUI interface is not present of rGazebo 4 or less. So either a work around or complete removal of GUI interface for the project is needed.This topic will be touched upon later on.
+
+Part 2
+creation of the world and the robot.
+Question 1 : Will the creation of different environment in gazebo affect the algorithm? New world can be created via GUI, does the algorithm in the project need to take into consideration ofthis change?
+Different robots can be used.So the algorithms should compatible by most of them. As there are 2 divisions for algorithms ie path planning and SLAM, we need to fix the minimum requirements for each algortihm ie the hardware part of the robot.
+
+Part3
+Fixing the algorithms for path planning and SLAM.Other than the algorithm side,wat other requirements  for gazebo and world creation need to be considered??
+Path planning- Astar, Dstar lite, ara star, ana star
+Slam- Kalman filter, EKF slam, Particle filter, graph slam, visual slam 
+
+
+
+Work on Part 2.
+This prt will also look into the structure of the program without the key algorthim.So compatibility with any world and any robot.
+Estimated time for completion 4 days
+
+Update1: The cost map which is needed for path plannig cmes witht he navigation stack.So the the nvigation stack noe is requirement
