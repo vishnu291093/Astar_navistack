@@ -8,3 +8,41 @@ the parent cell
 Add the required functions after starting to program Astar
 Make the changes required for makeplan
 Need to make the layout of the whole program
+
+function list
+
+getcoordinate()
+//for getting the position relative to origin
+Both the origin and the position of robot is eelative to the world frame in the beginnning
+Now we convert the robot frame  to be relative to the origin.
+
+convertToCellIndex()
+
+newX = x / resolution
+
+The x is in meters
+reslution is in meters/pixel
+
+So we get the pixel value of the point.
+So is each pixel considered to be a cell??
+or wat does the cell index correspond to
+
+cellIndex = getCellIndex(newY, newX);
+
+this func call gives the index to the newx and newy pixel points 
+
+ getCellIndex(newY, newX);
+ return (i*width)+j; 
+
+SO giving it  astructure of 2 d arrays
+
+
+
+
+convertToCoordinate()
+getCellColID(index) * resolution;
+ getCellRowID(index) * resolution;
+
+So each index cooresponds to a pixel .
+THey are arranged in a 1d array and this function gives back the x and y coordinate in meters
+

@@ -53,8 +53,6 @@ void RAstarPlannerROS::initialize(std::string name, costmap_2d::Costmap2DROS* co
     originX = costmap_->getOriginX();
     originY = costmap_->getOriginY();
 
-
-
 	width = costmap_->getSizeInCellsX();
 	height = costmap_->getSizeInCellsY();
 	resolution = costmap_->getResolution();
@@ -120,20 +118,17 @@ bool RAstarPlannerROS::makePlan(const geometry_msgs::PoseStamped& start, const g
   float goalX = goal.pose.position.x;
   float goalY = goal.pose.position.y;
 
-  //getCorrdinate(startX, startY);
-  //getCorrdinate(goalX, goalY);
-/*
+  getCorrdinate(startX, startY);   //for getting the position relative to origin
+  getCorrdinate(goalX, goalY);
+
   int startCell;
   int goalCell;
 
   if (isCellInsideMap(startX, startY) && isCellInsideMap(goalX, goalY))
   {
-    startCell = convertToCellIndex(startX, startY);
+    startCell = convertToCellIndex(startX, startY);   // wht is the difference between cell index and coordinate
 
     goalCell = convertToCellIndex(goalX, goalY);
-
-MyExcelFile << startCell <<"\t"<< start.pose.position.x <<"\t"<< start.pose.position.y <<"\t"<< goalCell <<"\t"<< goal.pose.position.x <<"\t"<< goal.pose.position.y;
-
   }
   else
   {
@@ -147,7 +142,7 @@ MyExcelFile << startCell <<"\t"<< start.pose.position.x <<"\t"<< start.pose.posi
 
   if (isStartAndGoalCellsValid(startCell, goalCell)){
 
-        vector<int> bestPath;
+    vector<int> bestPath;
 	bestPath.clear();
 
     bestPath = RAstarPlanner(startCell, goalCell);
@@ -218,4 +213,46 @@ MyExcelFile << startCell <<"\t"<< start.pose.position.x <<"\t"<< start.pose.posi
   }
 
 }
-*/
+void RAstarPlannerROS::getCorrdinate(float& x, float& y)
+{
+
+  x = x - originX;
+  y = y - originY;
+
+}
+
+int RAstarPlannerROS::convertToCellIndex(float x, float y)
+{
+
+  int cellIndex;
+
+  float newX = x / resolution;
+  float newY = y / resolution;
+
+  cellIndex = getCellIndex(newY, newX);
+
+  return cellIndex;
+}
+
+void RAstarPlannerROS::convertToCoordinate(int index, float& x, float& y)
+{
+
+  x = getCellColID(index) * resolution;
+
+  y = getCellRowID(index) * resolution;
+
+  x = x + originX;
+  y = y + originY;
+
+}
+
+bool RAstarPlannerROS::isCellInsideMap(float x, float y)
+{
+  bool valid = true;
+
+  if (x > (width * resolution) || y > (height * resolution))
+    valid = false;
+
+  return valid;
+}
+

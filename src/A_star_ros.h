@@ -75,6 +75,26 @@ public:
 		const geometry_msgs::PoseStamped& goal,
 		std::vector<geometry_msgs::PoseStamped>& plan
 	       );
+  void getCorrdinate (float& x, float& y);
+  bool isStartAndGoalCellsValid(int startCell,int goalCell);
+   vector<int> RAstarPlanner(int startCell, int goalCell);
+  int convertToCellIndex (float x, float y);
+  void convertToCoordinate(int index, float& x, float& y);
+  bool isCellInsideMap(float x, float y);
+
+int getCellIndex(int i,int j) //get the index of the cell to be used in Path
+  {
+   return (i*width)+j;
+  }
+  int getCellRowID(int index)//get the row ID from cell index
+  {
+     return index/width;
+  }
+  int getCellColID(int index)//get colunm ID from cell index
+  {
+    return index%width;
+  }
+
 
 
   float originX;
