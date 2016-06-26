@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string>
+#include <queue>
 
 /** include ros libraries**********************/
 #include <ros/ros.h>
@@ -54,11 +55,24 @@
 #ifndef ASTAR_CPP
 #define ASTAR_CPP
 
-struct cells {
-	//needs to filled out
+class cells {
+	public:
+	cells * parent;
+	int x;
+	float f,g,h;
+	cells(cells * parent int x, float g, float h );
 };
 
+std::priority_queue<cells*,vector<cells*>,compare> open;
+std::vector<cells*> close_list;
+struct compare{
 
+bool operator()(const cells* lhs, const cells* rhs) const
+{
+    return lhs->f < rhs->f;
+  }
+
+};
 namespace Astar_planner {  //dont noe if this is needed
 
 class AstarPlannerROS : public nav_core::BaseGlobalPlanner {

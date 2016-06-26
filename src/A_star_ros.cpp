@@ -20,6 +20,17 @@ PLUGINLIB_EXPORT_CLASS(Astar_planner::AstarPlannerROS, nav_core::BaseGlobalPlann
 int value;
 int mapSize;
 bool* OGM;
+int width_global;
+int height_global;
+cells::cells(cells * parent, int x, float g, float h )
+{
+this->parent=parent;
+this->x=x;
+this->g=g;
+this->h=h
+f=this->g+this->h;
+}
+
 
 namespace Astar_planner
 {
@@ -54,7 +65,9 @@ void RAstarPlannerROS::initialize(std::string name, costmap_2d::Costmap2DROS* co
     originY = costmap_->getOriginY();
 
 	width = costmap_->getSizeInCellsX();
+	width_global=width;
 	height = costmap_->getSizeInCellsY();
+	height_global=height;
 	resolution = costmap_->getResolution();
 	mapSize = width*height;
     //tBreak = 1+1/(mapSize);
@@ -256,3 +269,62 @@ bool RAstarPlannerROS::isCellInsideMap(float x, float y)
   return valid;
 }
 
+vector<int> RAstarPlannerROS(int StartCell, int GoalCell)
+{
+  cells* node= new cells(NULL,StartCell,0,CostToGoal(StartCell,GoalCell));
+  open(node);
+
+  while(!open.empty())
+  {
+  cells* q=open.pop();
+
+
+  }
+
+
+}
+
+float CostToGoal(int StartCell, int GoalCell)
+{
+int x_n=getCellRowID(StartCell);
+int y_n=getCellColID(StartCell);
+int x_g=getCellRowID(GoalCell);
+int y_g=getCellColID(GoalCell);
+
+float a = (x_g-x_n)^2-(y_g-y_n)^2;
+return sqrt(a);
+}
+
+std::vector<cells*> Neighbours8(cells *q)
+{ std::vector<cells*> output;
+int x_1=getCellRowID(q->parent);
+int y_1=getCellColID(q->parent);
+int x_neigh,y_neigh;
+for (int i=0;i<2;i++)
+{
+for (int j=0;j<2;j++)
+{ x_neigh=x_1+i;
+  y_neigh=y_1+j;
+  if x_neigh< width_global and y_neigh < height_global
+  { cells* node = new  cells(q,1,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  output.push_back(node);
+  }
+}
+}
+
+for (int i=1;i> -2; i=i -2)
+{
+ for (int j=1;j> -2; j=j -2)
+{
+x_neigh=x_1+i;
+  y_neigh=y_1+j;
+  if x_neigh< width_global and y_neigh < height_global
+  { cells* node = new  cells(q,1.414,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  output.push_back(node);
+  }
+
+
+
+}
+}
+}
