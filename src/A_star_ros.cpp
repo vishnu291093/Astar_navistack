@@ -269,14 +269,24 @@ bool RAstarPlannerROS::isCellInsideMap(float x, float y)
   return valid;
 }
 
-vector<int> RAstarPlannerROS(int StartCell, int GoalCell)
+vector<int> RAstarPlannerROS(int StartCell, int GoalCell) //make this class inherit for cells
 {
   cells* node= new cells(NULL,StartCell,0,CostToGoal(StartCell,GoalCell));
   open(node);
-
+  std::vector<cells*> neighbour_list_;
   while(!open.empty())
   {
   cells* q=open.pop();
+  neighbour_list_=Neighbours8(q);
+  for(int i=0;i<neighbour_list_.size();i++)
+  { open.push(neighbour_list_.(i));
+  }
+  for(int i=0;i<neighbour_list_.size();i++)
+  {
+  if neighbour_list_(i)->x==GoalCell
+  {break;}
+
+  }
 
 
   }
@@ -284,7 +294,7 @@ vector<int> RAstarPlannerROS(int StartCell, int GoalCell)
 
 }
 
-float CostToGoal(int StartCell, int GoalCell)
+float cells::CostToGoal(int StartCell, int GoalCell)
 {
 int x_n=getCellRowID(StartCell);
 int y_n=getCellColID(StartCell);
@@ -295,7 +305,7 @@ float a = (x_g-x_n)^2-(y_g-y_n)^2;
 return sqrt(a);
 }
 
-std::vector<cells*> Neighbours8(cells *q)
+std::vector<cells*> cells:: Neighbours8(cells *q)
 { std::vector<cells*> output;
 int x_1=getCellRowID(q->parent);
 int y_1=getCellColID(q->parent);
@@ -305,8 +315,8 @@ for (int i=0;i<2;i++)
 for (int j=0;j<2;j++)
 { x_neigh=x_1+i;
   y_neigh=y_1+j;
-  if x_neigh< width_global and y_neigh < height_global
-  { cells* node = new  cells(q,1,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  if x_neigh< width_global and y_neigh < height_global and OGM(getCellIndex(x_neigh,y_neigh))
+  { cells* node = new  cells(q,q->g+1,CostToGoal(getCellIndex(x_neigh,y_neigh)));
   output.push_back(node);
   }
 }
@@ -318,13 +328,10 @@ for (int i=1;i> -2; i=i -2)
 {
 x_neigh=x_1+i;
   y_neigh=y_1+j;
-  if x_neigh< width_global and y_neigh < height_global
-  { cells* node = new  cells(q,1.414,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  if x_neigh< width_global and y_neigh < height_global and OGM(getCellIndex(x_neigh,y_neigh)) //see if OGM is true for free space
+  { cells* node = new  cells(q,q->g+1.414,CostToGoal(getCellIndex(x_neigh,y_neigh)));
   output.push_back(node);
   }
-
-
-
 }
 }
 }

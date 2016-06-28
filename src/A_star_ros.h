@@ -61,6 +61,8 @@ class cells {
 	int x;
 	float f,g,h;
 	cells(cells * parent int x, float g, float h );
+	std::vector<cells*> Neighbours8(cells *q);
+	float CostToGoal(int StartCell, int GoalCell);
 };
 
 std::priority_queue<cells*,vector<cells*>,compare> open;
@@ -75,7 +77,7 @@ bool operator()(const cells* lhs, const cells* rhs) const
 };
 namespace Astar_planner {  //dont noe if this is needed
 
-class AstarPlannerROS : public nav_core::BaseGlobalPlanner {
+class AstarPlannerROS : public nav_core::BaseGlobalPlanner,cells {
 public:
 
   AstarPlannerROS (ros::NodeHandle &); //this constructor is may be not needed
