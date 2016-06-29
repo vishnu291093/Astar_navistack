@@ -10,7 +10,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-
+#include <map>
 #include "A_star_ros.h"
 
 #include <pluginlib/class_list_macros.h>
@@ -22,6 +22,7 @@ int mapSize;
 bool* OGM;
 int width_global;
 int height_global;
+int goal_global;
 cells::cells(cells * parent, int x, float g, float h )
 {
 this->parent=parent;
@@ -142,6 +143,7 @@ bool RAstarPlannerROS::makePlan(const geometry_msgs::PoseStamped& start, const g
     startCell = convertToCellIndex(startX, startY);   // wht is the difference between cell index and coordinate
 
     goalCell = convertToCellIndex(goalX, goalY);
+    goal_global=goalCell;
   }
   else
   {
@@ -273,6 +275,7 @@ vector<int> RAstarPlannerROS(int StartCell, int GoalCell) //make this class inhe
 {
   cells* node= new cells(NULL,StartCell,0,CostToGoal(StartCell,GoalCell));
   open(node);
+  open_list[node->x]=node->g+node->h;
   std::vector<cells*> neighbour_list_;
   while(!open.empty())
   {
@@ -285,17 +288,31 @@ vector<int> RAstarPlannerROS(int StartCell, int GoalCell) //make this class inhe
   {
   if neighbour_list_(i)->x==GoalCell
   {break;}
+  if(open_list.find(neighbour_list_(i)->x) != open_list.end()){
+  if (open_list[neighbour_list_(i)->x] < neighbour_list_(i)->g+neighbour_list_(i)->h)
+  continue;
+  }
+  if(close_list.find(neighbour_list_(i)->x) != close_list.end()){
+ if (close_list[neighbour_list_(i)->x] < neighbour_list_(i)->g+neighbour_list_(i)->h)
+  continue;
+ }
+   open(neighbour_list_(i));
+    open_list[neighbour_list_(i)->x] = neighbour_list_(i)->g+neighbour_list_(i)->h;
 
   }
-
-
+  close_list[q->x]=q->g+q->h;
   }
-
-
 }
+//void CheckForClosedList(std::vector<cells*> & Closed , cells * Obj )
 
-float cells::CostToGoal(int StartCell, int GoalCell)
+
+
+
+
+
+float cells::CostToGoal(int StartCell)
 {
+int GoalCell=goal_global;
 int x_n=getCellRowID(StartCell);
 int y_n=getCellColID(StartCell);
 int x_g=getCellRowID(GoalCell);

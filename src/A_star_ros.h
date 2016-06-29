@@ -9,7 +9,7 @@
 #include <netdb.h>
 #include <string>
 #include <queue>
-
+#include <maps>
 /** include ros libraries**********************/
 #include <ros/ros.h>
 
@@ -59,14 +59,16 @@ class cells {
 	public:
 	cells * parent;
 	int x;
-	float f,g,h;
+	float g,h;
 	cells(cells * parent int x, float g, float h );
 	std::vector<cells*> Neighbours8(cells *q);
-	float CostToGoal(int StartCell, int GoalCell);
+	float CostToGoal(int StartCell);
 };
 
 std::priority_queue<cells*,vector<cells*>,compare> open;
-std::vector<cells*> close_list;
+//std::vector<cells*> close_list;
+std::map<int,float> close_list;
+std::map<int,float> open_list;
 struct compare{
 
 bool operator()(const cells* lhs, const cells* rhs) const
@@ -79,7 +81,7 @@ namespace Astar_planner {  //dont noe if this is needed
 
 class AstarPlannerROS : public nav_core::BaseGlobalPlanner,cells {
 public:
-
+  //std::vector<cells*> closed;
   AstarPlannerROS (ros::NodeHandle &); //this constructor is may be not needed
   AstarPlannerROS ();
   AstarPlannerROS(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
@@ -91,6 +93,7 @@ public:
 		const geometry_msgs::PoseStamped& goal,
 		std::vector<geometry_msgs::PoseStamped>& plan
 	       );
+  void CheckForClosedList(std::vector<cells*> & , cells *);
   void getCorrdinate (float& x, float& y);
   bool isStartAndGoalCellsValid(int startCell,int goalCell);
    vector<int> RAstarPlanner(int startCell, int goalCell);
