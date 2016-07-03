@@ -55,16 +55,15 @@
 #ifndef ASTAR_CPP
 #define ASTAR_CPP
 
-class cells   {
+class cells {
 	public:
 	cells * parent= NULL;
 	int x;
 	float g,h;
-	cells();
 	cells(cells * parent, int x, float g, float h );
-
+	std::vector<cells*> Neighbours8(cells *q);
+	float CostToGoal(int StartCell);
 };
-
 struct compare{
 
 bool operator()(const cells* lhs, const cells* rhs) const
@@ -103,8 +102,7 @@ public:
   int convertToCellIndex (float x, float y);
   void convertToCoordinate(int index, float& x, float& y);
   bool isCellInsideMap(float x, float y);
-std::vector<cells*> Neighbours8(cells *q);
-float CostToGoal(int StartCell);
+
 int getCellIndex(int i,int j) //get the index of the cell to be used in Path
   {
    return (i*width)+j;
@@ -131,5 +129,6 @@ int getCellIndex(int i,int j) //get the index of the cell to be used in Path
   int width;
   int height;
 
+  };
   };
   #endif

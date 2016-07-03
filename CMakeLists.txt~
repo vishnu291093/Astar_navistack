@@ -117,7 +117,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-add_library(astar_lib src/A_star_ros.cpp)
+
 ## Declare a C++ library
 # add_library(Astar_navistack
 #   src/${PROJECT_NAME}/Astar_navistack.cpp

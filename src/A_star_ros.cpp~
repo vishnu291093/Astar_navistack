@@ -15,7 +15,7 @@
 
 #include <pluginlib/class_list_macros.h>
 //register this planner as a BaseGlobalPlanner plugin
-PLUGINLIB_EXPORT_CLASS(AstarPlannerROS, nav_core::BaseGlobalPlanner)
+PLUGINLIB_EXPORT_CLASS(Astar_planner::AstarPlannerROS, nav_core::BaseGlobalPlanner)
 
 int value;
 int mapSize;
@@ -23,8 +23,6 @@ bool* OGM;
 int width_global;
 int height_global;
 int goal_global;
-cells::cells() {
-}
 cells::cells(cells * parent, int x, float g, float h)
 {
 this->parent=parent;
@@ -35,7 +33,8 @@ this->h=h;
 }
 
 
-
+namespace Astar_planner
+{
 
 //Default Constructor
 AstarPlannerROS::AstarPlannerROS()
@@ -161,7 +160,7 @@ bool AstarPlannerROS::makePlan(const geometry_msgs::PoseStamped& start, const ge
    std::vector<int> bestPath;
 	bestPath.clear();
 
-    bestPath = AstarPlanner(startCell, goalCell);
+    bestPath = RAstarPlanner(startCell, goalCell);
 
 //if the global planner find a path
     if ( bestPath.size()>0)
@@ -271,46 +270,46 @@ bool AstarPlannerROS::isCellInsideMap(float x, float y)
   return valid;
 }
 
-std::vector<int> AstarPlannerROS::AstarPlanner(int StartCell, int GoalCell) //make this class inherit for cells
+vector<int> AstarPlannerROS::AstarPlanner(int StartCell, int GoalCell) //make this class inherit for cells
 {
   cells* node= new cells(NULL,StartCell,0,CostToGoal(StartCell));
-  open.push(node);
+  open(node);
   open_list[node->x]=node->g+node->h;
   bool status =false;
   std::vector<int> bestpath;
-  while(!open.empty() and !status )
-  {
-  std::vector<cells*> neighbour_list_;
-  cells* q = open.top();
-  open.pop();
-  neighbour_list_ = Neighbours8(q);
+  while(!open.empty())
+  {std::vector<cells*> neighbour_list_;
+  cells* q=open.pop();
+  neighbour_list_=Neighbours8(q);
   for(int i=0;i<neighbour_list_.size();i++)
-  {
-  open.push(neighbour_list_[i]);
+  { open.push(neighbour_list_.(i));
   }
   for(int i=0;i<neighbour_list_.size();i++)
   {
-  if (neighbour_list_[i]->x == GoalCell)
+  if neighbour_list_(i)->x==GoalCell
   {   status=true;
-   bestpath=ConstructPath(neighbour_list_[i]);
       break;}
-  if (open_list.find(neighbour_list_[i]->x) != open_list.end()){
-  if (open_list[neighbour_list_[i]->x] < neighbour_list_[i]->g+neighbour_list_[i]->h)
+  if(open_list.find(neighbour_list_(i)->x) != open_list.end()){
+  if (open_list[neighbour_list_(i)->x] < neighbour_list_(i)->g+neighbour_list_(i)->h)
   continue;
   }
-  if(close_list.find(neighbour_list_[i]->x) != close_list.end()){
- if (close_list[neighbour_list_[i]->x] < neighbour_list_[i]->g+neighbour_list_[i]->h)
+  if(close_list.find(neighbour_list_(i)->x) != close_list.end()){
+ if (close_list[neighbour_list_(i)->x] < neighbour_list_(i)->g+neighbour_list_(i)->h)
   continue;
  }
-    open.push(neighbour_list_[i]);
-    open_list[neighbour_list_[i]->x] = neighbour_list_[i]->g+neighbour_list_[i]->h;
+   open(neighbour_list_(i));
+    open_list[neighbour_list_(i)->x] = neighbour_list_(i)->g+neighbour_list_(i)->h;
 
   }
   close_list[q->x]=q->g+q->h;
   }
 
-//else
-   // std::cout<<"path not found";
+if (status ==true)
+{
+    bestpath=ConstructPath(neighbour_list_(i));
+}
+else
+    std::cout<<"path not found";
 
 }
 //void CheckForClosedList(std::vector<cells*> & Closed , cells * Obj )
@@ -329,7 +328,11 @@ std::vector<int>AstarPlannerROS::ConstructPath(cells * FinalCell)
 return bestpath;
 }
 
-float AstarPlannerROS::CostToGoal(int StartCell)
+
+
+
+}
+float cells::CostToGoal(int StartCell)
 {
 int GoalCell=goal_global;
 int x_n=getCellRowID(StartCell);
@@ -340,10 +343,10 @@ int y_g=getCellColID(GoalCell);
 float a = (x_g-x_n)^2-(y_g-y_n)^2;
 return sqrt(a);
 }
-std::vector<cells*> AstarPlannerROS :: Neighbours8(cells *q)
+std::vector<cells*> cells:: Neighbours8(cells *q)
 { std::vector<cells*> output;
-int x_1=getCellRowID(q->x);
-int y_1=getCellColID(q->x);
+int x_1=getCellRowID(q->parent);
+int y_1=getCellColID(q->parent);
 int x_neigh,y_neigh;
 for (int i=0;i<2;i++)
 {
@@ -351,8 +354,8 @@ for (int j=0;j<2;j++)
 { x_neigh=x_1+i;
   y_neigh=y_1+j;
   int ind=getCellIndex(x_neigh,y_neigh);
-  if (x_neigh< width_global and y_neigh < height_global and OGM[ind])
-  { cells* node = new  cells(q,getCellIndex(x_neigh,y_neigh),(q->g)+1,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  if (x_neigh< width_global and y_neigh < height_global and OGM(ind))
+  { cells* node = new  cells(q,q->g+1,CostToGoal(getCellIndex(x_neigh,y_neigh)));
   output.push_back(node);
   }
 }
@@ -365,12 +368,11 @@ for (int i=1;i> -2; i=i -2)
 x_neigh=x_1+i;
   y_neigh=y_1+j;
   int ind= getCellIndex(x_neigh,y_neigh);
-  if (x_neigh< width_global and y_neigh < height_global and OGM[ind]) //see if OGM is true for free space
-  { cells* node = new  cells(q,getCellIndex(x_neigh,y_neigh),q->g+1.414,CostToGoal(getCellIndex(x_neigh,y_neigh)));
+  if (x_neigh< width_global and y_neigh < height_global and OGM(ind)) //see if OGM is true for free space
+  { cells* node = new  cells(q,q->g+1.414,CostToGoal(getCellIndex(x_neigh,y_neigh)));
   output.push_back(node);
   }
 }
 }
-return output;
 }
 
